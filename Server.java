@@ -80,7 +80,34 @@ public class Server {
        }
 
 
-       
+       private String factorize(int num) {
+           if (num > Integer.MAX_VALUE) {  // Use Integer.MAX_VALUE for larger numbers
+               return "There was an exception on the server";  // Handling extremely large numbers
+           }
+
+
+           int count = 0;
+           StringBuilder factors = new StringBuilder("The number " + num + " has ");
+
+
+           for (int i = 1; i <= num; i++) {
+               if (num % i == 0) {
+                   count++;
+               }
+           }
+           return factors.append(count).append(" factors").toString();
+       }
+   }
+
+
+   public void disconnect() {
+       try {
+           serverSocket.close(); // Close the server socket to stop accepting new connections
+       } catch (IOException e) {
+           System.err.println("Error during disconnection: " + e.getMessage());
+           System.exit(1);  // Optional, consider logging instead
+       }
+   }
 }
 
 
