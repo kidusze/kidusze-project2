@@ -33,6 +33,52 @@ public class Server {
    }
 
 
+   // Change ClientHandler to extend Thread
+   private class ClientHandler extends Thread {
+       private Socket clientSocket;
+       private PrintWriter out;
+       private BufferedReader in;
+
+
+       public ClientHandler(Socket socket) {
+           this.clientSocket = socket;
+       }
+
+
+       @Override
+       public void run() {
+           try {
+               in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+               out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+
+               // Handshake
+               String clientPasscode = in.readLine();
+               if (clientPasscode.equals("12345")) {
+                   connectedTimes.add(LocalDateTime.now());
+                   //connectedTimes.add(System.currentTimeMillis());
+
+
+                   // Factorization request
+                   String number = in.readLine();
+                   try {
+                       int num = Integer.parseInt(number);
+                       String result = factorize(num);
+                       out.println(result);  // Send the factorization result
+                   } catch (NumberFormatException e) {
+                       out.println("There was an exception on the server");
+                   }
+               } else {
+                   out.println("couldn't handshake");  // Invalid passcode response
+               }
+
+
+               clientSocket.close();
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
+       }
+
 
        
 }
